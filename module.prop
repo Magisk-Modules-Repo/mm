@@ -1,7 +1,7 @@
 id=mm
 name=Magisk Manager for Recovery Mode
-version=2017.11.11
-versionCode=201711110
+version=2017.11.11-1
+versionCode=201711111
 author=VR25 @ XDA Developers
 description=Manage your Magisk image, data, modules & settings in recovery mode (run "/data/media/mm").
 template=1400

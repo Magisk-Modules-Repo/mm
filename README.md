@@ -36,5 +36,5 @@
 
 
 **Online Support**
-- [Git Repository]([url]https://github.com/VR-25/Magisk-Manager-for-Recovery-Mode[/url])
-- [XDA Thread]([url]https://forum.xda-developers.com/apps/magisk/module-tool-magisk-manager-recovery-mode-t3693165[/url])
+- [Git Repository](https://github.com/Magisk-Modules-Repo/Magisk-Manager-for-Recovery-Mode)
+- [XDA Thread](https://forum.xda-developers.com/apps/magisk/module-tool-magisk-manager-recovery-mode-t3693165)

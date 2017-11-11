@@ -5,7 +5,7 @@
 
 # ENVIRONMENT
 
-[ -f /data/media/magisk/magisk.img ] && img=/data/media/magisk/magisk.img || img=/data/magisk.img
+[ -f /data/media/magisk.img ] && img=/data/media/magisk.img || img=/data/magisk.img
 if [ ! -f $img ] || [ ! -d /data/magisk ]; then
 	echo
 	echo "(!) Magisk is not installed"
@@ -260,7 +260,7 @@ immortal_m() {
 		
 	else echo "(i) Fresh ROM, uh?"
 		echo "ln -s /data/media/magisk.img /data"
-		ln -s /data/media/magisk/magisk.img /data \
+		ln -s /data/media/magisk.img /data \
 		&& echo "- All set."
 	fi
 }
