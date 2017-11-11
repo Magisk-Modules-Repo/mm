@@ -5,46 +5,70 @@
 
 # ENVIRONMENT
 
-VesionCode=201710230
-img=/data/magisk.img
+[ -f /data/media/magisk/magisk.img ] && img=/data/media/magisk/magisk.img || img=/data/magisk.img
+if [ ! -f $img ] || [ ! -d /data/magisk ]; then
+	echo
+	echo "(!) Magisk is not installed"
+	echo
+	exit 1
+fi
+
+mount_img() {
+	# Detect whether in boot mode
+	ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true || BOOTMODE=false
+	$BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMODE=true
+
+	if $BOOTMODE; then
+		echo
+		echo "I saw what you did there... :)"
+		echo "- Bad idea!"
+		echo "- This is meant to be used in recovery mode only."
+		echo
+		exit 1
+	fi
+	
+	mkdir $2 2>/dev/null
+    mount $img $mntpt
+  
+	if ! mountpoint -q $mntpt; then
+		echo
+		echo "(!) $img mount failed"
+		echo
+		exit 1
+	fi
+}
+
+echo
+echo "Magisk Manager"
+echo
 mntpt=/magisk
 TMPDIR=/dev/tmpd
-PATH=$PATH:/data/magisk:$TMPDIR
+PATH=$PATH:/data/media:/data/magisk:$TMPDIR
 { busybox mkdir $TMPDIR
 busybox --install -s $TMPDIR
-mkdir $mntpt
 mount /data
 mount /cache
-mount $img $mntpt; } 2>/dev/null
+mount_img $img $mntpt; } 2>/dev/null
+
 tmpf=$TMPDIR/tmpf
 tmpf2=$TMPDIR/tmpf2
 first_run=true
 cd $mntpt
 
 
-# Detect whether in boot mode
-ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true || BOOTMODE=false
-$BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMODE=true
-
-$BOOTMODE && echo \
-	&& echo "I saw what you did there... :)" \
-	&& echo "- Bad idea!" \
-	&& echo "- This is meant to be used in recovery mode only." \
-	&& echo \
-	&& exit 1
-
- 
 # ENGINE
 
 actions() {
 	echo
 	cat <<EOL
-e. Enable/disable modules
-f. Fix magisk.img (e2fsck -fy)
-l. List installed modules
-r. Resize magisk.img
-t. Toggle auto_mount
-u. Uninstall modules
+e) Enable/disable modules
+f) Fix magisk.img (e2fsck -fy)
+l) List installed modules
+m) Make magisk.img survive f. resets
+r) Resize magisk.img
+s) Change Magisk settings (WIP)
+t) Toggle auto_mount
+u) Uninstall modules
 ---
 x. Exit
 EOL
@@ -55,9 +79,9 @@ EOL
 
 exit_or_not() {
 	echo
-	echo "Would you like to do anything else? (y/N)"
+	echo "Would you like to do anything else? (Y/n)"
 	read ans
-	echo $ans | grep -iq y && opts || exxit
+	echo $ans | grep -iq n && echo && exxit || opts
 }
 
 
@@ -117,12 +141,6 @@ toggle() {
 }
 
 
-if ! mountpoint -q $mntpt; then
-	echo "(!) mm: $img mount failed"
-	exxit 1
-fi
-
-
 auto_mnt() { auto_mount=true; toggle auto_mount auto_mount rm touch; }
 
 
@@ -136,10 +154,9 @@ exxit() {
 	umount /data
 	umount /cache
 	rmdir $mntpt; } 2>/dev/null
-	echo
 
 	if [ "$1" != "1" ]; then
-		echo "Goodbye"
+		echo "Goodbye."
 		echo
 		exit 0
 	elif [ "$1" = "0" ]; then exit 0
@@ -150,26 +167,19 @@ exxit() {
 
 fix_img() {
 	echo "<e2fsck -fy magisk.img>"
-	e2fsck -fy $img
 	echo
-	echo Done
+	e2fsck -fy $img
 }
 
 
 list_mods() {
-	echo
 	echo "<Installed Modules>"
 	echo
 	mod_ls
-	echo
 }
 
 
 opts() {
-	if $first_run; then
-		echo
-		echo "Magisk Manager"
-	else echo; fi
 	echo
 	echo "Pick an option..."
 	actions
@@ -178,14 +188,15 @@ opts() {
 		e ) enable_disable_mods;;
 		f ) fix_img;;
 		l ) list_mods;;
+		m ) immortal_m;;
 		r ) resize_img;;
+		s ) m_settings;;
 		t ) auto_mnt;;
 		u ) rm_mods;;
 		x ) exxit;;
 		* ) opts;;
 	esac
-
-	first_run=false
+	
 	exit_or_not
 }
 
@@ -198,12 +209,10 @@ resize_img() {
 	echo "Input the desired size in MB"
 	echo "- Or nothing to cancel"
 	echo "- Press CTRL+C to exit"
-	echo
 	read INPUT
 	if [ "$INPUT" ]; then
-		resize2fs $img ${INPUT}M
 		echo
-		echo Done
+		resize2fs $img ${INPUT}M
 	else
 		echo "(i) Operation aborted: null input"
 	fi
@@ -215,6 +224,7 @@ rm_mods() {
 	: > $tmpf2
 	INPUT=0
 	list_mods
+	echo
 	echo "Input a matching WORD/string at once"
 	echo "- Press RETURN when done (or to cancel)"
 	echo "-- CTRL+C to exit"
@@ -233,6 +243,47 @@ rm_mods() {
 	else
 		echo "(i) Operation aborted: null input"
 	fi
+}
+
+
+immortal_m() {
+	if [ ! -f /data/media/magisk.img ]; then
+		err() { echo "$1"; exit_or_not; }
+		echo "mv /data/magisk.img /data/media"
+		mv /data/magisk.img /data/media \
+			&& echo "ln -s /data/media/magisk.img /data" \
+			&& ln -s /data/media/magisk.img /data \
+			&& echo "- All set." \
+			&& echo \
+			&& echo "(i) Run this again right after factory resets to recreate the symlink." \
+			|| err "- (!) magisk.img couldn't be moved"
+		
+	else echo "(i) Fresh ROM, uh?"
+		echo "ln -s /data/media/magisk.img /data"
+		ln -s /data/media/magisk/magisk.img /data \
+		&& echo "- All set."
+	fi
+}
+
+
+m_settings() {
+	echo "(i) function not fully implemented (WIP)"
+	#prefs=/data/data/com.topjohnwu.magisk/shared_prefs/com.topjohnwu.magisk_preferences.xml
+	#y=true
+	#n=false
+	
+	#c() { sed -i "/disable/s/false/$y" $prefs; }
+	#d() {
+		
+	#h() {
+		
+	#n() {
+		
+	
+	#list all
+	#prompt for function + bool y/n or t/f
+	#use for loop to separate function from bool & run
+	
 }
 
 

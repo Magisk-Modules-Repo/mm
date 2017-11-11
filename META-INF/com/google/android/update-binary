@@ -6,8 +6,8 @@
 ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true || BOOTMODE=false
 $BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMODE=true
 
+umask 022
 PATH=$PATH:/data/magisk/:$TMPDIR
-VesionCode=201710230
 TMPDIR=/dev/tmpd
 OUTFD="$2"
 ZIP="$3"
@@ -19,14 +19,11 @@ busybox mkdir $TMPDIR
 busybox --install -s $TMPDIR
 mkdir $mntpt
 mount $img $mntpt
+rm -rf $mntpt/mm
 mkdir $mntpt/mm
 mount /cache
 ! $BOOTMODE && mount -o ro /system \
-	&& mount -o bind /data/magisk /system/bin; } 2>/dev/null
-
-[ -f /data/magisk/mm ] && \
-	InstalledVersion=$(grep 'VesionCode=' /data/magisk/mm | cut -d= -f2) \
-	|| InstalledVersion=0
+	&& mount -o bind /data/media /system/bin; } 2>/dev/null
 
 if ! $BOOTMODE; then
 readlink /proc/$$/fd/$OUTFD 2>/dev/null | grep /tmp >/dev/null
@@ -56,33 +53,28 @@ ui_print() {
 
 ui_print " "
 ui_print "Magisk Manager for Recovery Mode"
-ui_print "- VR25 @ XDA Developers"
+ui_print "VR25 @ XDA Developers"
 ui_print " "
 
-$BOOTMODE && echo "Placing files..."
-
-# For whatever reason, this "if" statement doesn't work
-#if [ "$VersionCode" -gt "$InstalledVersion" ]; then
-	unzip -oqq "$ZIP" "mm" -d /data/magisk
-	chmod 777 /data/magisk/mm
-#fi
-
-# Copy/update module.prop
-unzip -oqq "$ZIP" module.prop -d $mntpt/mm
+$BOOTMODE && echo "Extracting files & setting permissions..."
+unzip -o "$ZIP" mm -d /data/media | grep -iv archive
+unzip -o "$ZIP" module.prop -d $mntpt/mm | grep -iv archive
+chmod 755 /data/media/mm
+chcon u:object_r:system_file:s0 /data/media/mm
 
 if ! $BOOTMODE; then
 	ui_print 'Run "mm" on terminal to get started.'
 	ui_print " "
 	ui_print "(i) Next time, you don't need to re-flash this (unless it's an update)."
-	ui_print '- Simply run ". /data/magisk/mm".'
+	ui_print '- Simply run "/data/media/mm".'
 	ui_print " "
 fi
 
-$BOOTMODE && echo "- Done." \
-	&& echo \
-	&& echo '(i) To use, run ". /data/magisk/mm" on recovery terminal.' \
-	&& echo "- Follow the wizard; everything is interactive." \
-	|| ui_print "Enjoy."
+if $BOOTMODE; then echo "Done."
+	echo
+	echo '(i) To use, run "/data/media/mm" on recovery terminal.'
+	echo "Follow the wizard -- everything is interactive."
+else ui_print "Enjoy."; fi
 
 ui_print " "
 exit 0
