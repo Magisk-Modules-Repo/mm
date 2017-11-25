@@ -59,8 +59,10 @@ echo
 echo "Magisk Manager"
 echo
 mntpt=/magisk
-TMPDIR=/dev/tmpd
-{ mount /data
+TMPDIR=/dev/tmpd/mm
+{ rm -rf $TMPDIR
+mkdir -p $TMPDIR
+mount /data
 mount /cache
 mount_img $img $mntpt; } 2>/dev/null
 

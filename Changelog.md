@@ -1,3 +1,6 @@
+# 2017.11.25-1 (201711251)
+- Fixed "non-existent tmpd" error
+
 # 2017.11.25 (201711250)
 - Top-to-botton optimizations
 - Users no longer have to reboot recovery after flashing mm -- prior to flashing something else
