@@ -6,11 +6,28 @@
 # ENVIRONMENT
 
 [ -f /data/media/magisk.img ] && img=/data/media/magisk.img || img=/data/magisk.img
-if [ ! -f $img ] || [ ! -d /data/magisk ]; then
+
+if [ ! -d /data/magisk ]; then
 	echo
-	echo "(!) Magisk is not installed"
+	echo "(!) Magisk is not installed."
 	echo
 	exit 1
+fi
+
+if [ ! -f $img ]; then
+	echo
+	echo "(!) magisk.img doesn't exist."
+	echo
+	exit 1
+fi
+
+# Set up Magisk's busybox
+bpath=/data/magisk/busybox
+if [ -f $bpath ]; then
+	alias busybox=$bpath
+	for i in $(busybox --list); do
+		alias $i="$bpath $i"
+	done
 fi
 
 mount_img() {
@@ -43,10 +60,7 @@ echo "Magisk Manager"
 echo
 mntpt=/magisk
 TMPDIR=/dev/tmpd
-PATH=$PATH:/data/media:/data/magisk:$TMPDIR
-{ busybox mkdir $TMPDIR
-busybox --install -s $TMPDIR
-mount /data
+{ mount /data
 mount /cache
 mount_img $img $mntpt; } 2>/dev/null
 
@@ -256,7 +270,7 @@ immortal_m() {
 			&& echo "- All set." \
 			&& echo \
 			&& echo "(i) Run this again right after factory resets to recreate the symlink." \
-			|| err "- (!) magisk.img couldn't be moved"
+			|| err "- (!) magisk.img couldn't be moved."
 		
 	else echo "(i) Fresh ROM, uh?"
 		echo "ln -s /data/media/magisk.img /data"

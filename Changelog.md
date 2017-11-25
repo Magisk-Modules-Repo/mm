@@ -1,3 +1,7 @@
+# 2017.11.25 (201711250)
+- Top-to-botton optimizations
+- Users no longer have to reboot recovery after flashing mm -- prior to flashing something else
+
 # 2017.11.11-1 (201711111)
 - Fixed critical error -- wrong IMG path.
 

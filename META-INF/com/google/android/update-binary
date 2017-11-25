@@ -2,28 +2,31 @@
 # Magisk Manager for Recovery Mode (Installer)
 # VR25 @ XDA Developers
 
+# Set up Magisk's busybox
+bpath=/data/magisk/busybox
+if [ -f $bpath ]; then
+	alias busybox=$bpath
+	for i in $(busybox --list); do
+		alias $i="$bpath $i"
+	done
+fi
+
 # Detect whether in boot mode
 ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true || BOOTMODE=false
 $BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMODE=true
 
 umask 022
-PATH=$PATH:/data/magisk/:$TMPDIR
-TMPDIR=/dev/tmpd
 OUTFD="$2"
 ZIP="$3"
 img=/data/magisk.img
 mntpt=/magisk
 
 { mount /data
-busybox mkdir $TMPDIR
-busybox --install -s $TMPDIR
 mkdir $mntpt
 mount $img $mntpt
 rm -rf $mntpt/mm
 mkdir $mntpt/mm
-mount /cache
-! $BOOTMODE && mount -o ro /system \
-	&& mount -o bind /data/media /system/bin; } 2>/dev/null
+mount /cache; } 2>/dev/null
 
 if ! $BOOTMODE; then
 readlink /proc/$$/fd/$OUTFD 2>/dev/null | grep /tmp >/dev/null
@@ -61,6 +64,7 @@ unzip -o "$ZIP" mm -d /data/media | grep -iv archive
 unzip -o "$ZIP" module.prop -d $mntpt/mm | grep -iv archive
 chmod 755 /data/media/mm
 chcon u:object_r:system_file:s0 /data/media/mm
+$BOOTMODE || ln -s /data/media/mm /sbin
 
 if ! $BOOTMODE; then
 	ui_print 'Run "mm" on terminal to get started.'

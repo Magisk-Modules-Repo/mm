@@ -31,7 +31,7 @@
 - Follow the instructions/wizard; everything is interactive.
 
 
-**Notes/tips**
+**Notes/Tips**
 - The option to run `e2fsck -fy /data/magisk.img` is meant for fixing magisk.img corruption/errors caused by a module or abrupt system shutdown. This is particularly useful when magisk.img is inaccessible in recovery mode (i.e., cannot be mounted due to curruption).
 
 
