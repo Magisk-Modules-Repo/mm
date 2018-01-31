@@ -1,40 +1,52 @@
 # Magisk Manager for Recovery Mode
-# VR25 @ XDA Developers
+## VR25 @ xda-developers
 
 
-**Description**
-- Manage your Magisk image, data, modules & settings in recovery mode.
+### Description
+- Manage your Magisk image, data, modules & settings in recovery mode -- run "/data/media/mm" on terminal.
 
 
-**Disclaimer**
+### Disclaimer
 - Don't blame me if you end up triggering a nuclear disaster with this module! You do everything at your own risk.
 
 
-**Features**
+### Features
 - Enable/disable modules
-- Change Magisk settings (WIP)
-- Fix magisk.img (e2fsck -fy)
+- Change Magisk settings (using vi text editor)
+- Automatically fix magisk.img (e2fsck -fy)
 - List installed modules
-- Make magisk.img survive factory resets
+- Make magisk.img survive standard TWRP factory resets
 - Resize magisk.img
 - Toggle auto_mount
 - Uninstall modules
 
 
-**Installation**
-- Flash from Magisk Manager app or recovery as if it were a regular Magisk module.
+### Installation
+- Flash in Magisk Manager app or recovery as a regular Magisk module.
 
 
-**Usage**
+### Usage
 - First time (right after installing/updating) -- run "mm" (on recovery terminal).
 - Next times (while in recovery) -- no need to re-flash the zip; simply run "/data/media/mm" on terminal.
 - Follow the instructions/wizard; everything is interactive.
 
 
-**Notes/Tips**
-- The option to run `e2fsck -fy /data/magisk.img` is meant for fixing magisk.img corruption/errors caused by a module or abrupt system shutdown. This is particularly useful when magisk.img is inaccessible in recovery mode (i.e., cannot be mounted due to curruption).
-
-
-**Online Support**
+### Online Support
 - [Git Repository](https://github.com/Magisk-Modules-Repo/Magisk-Manager-for-Recovery-Mode)
 - [XDA Thread](https://forum.xda-developers.com/apps/magisk/module-tool-magisk-manager-recovery-mode-t3693165)
+
+
+### Recent Changes
+
+**2018.1.31 (201801310)**
+- Ability to change Magisk settings (using vi text editor)
+- Improved compatibility with all major Magisk versions currently in use
+- Major optimizations
+- Updated reference
+
+**2017.11.25-1 (201711251)**
+- Fixed "non-existent tmpd" error
+
+**2017.11.25 (201711250)**
+- Top-to-bottom optimizations
+- Users no longer have to reboot recovery after flashing mm -- prior to flashing something else
