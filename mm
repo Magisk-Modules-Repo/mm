@@ -1,6 +1,6 @@
 #!/sbin/sh
 # Magisk Manager for Recovery Mode (mm)
-# VR25 @ XDA Developers
+# VR25 @ xda-developers
 
 # Detect whether in boot mode
 ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true || BOOTMODE=false
@@ -26,7 +26,10 @@ is_mounted() { mountpoint -q "$1"; }
 
 mount_image() {
   e2fsck -fy $IMG &>/dev/null
-  [ -d "$2" ] || mkdir -p "$2"
+  if [ ! -d "$2" ]; then
+    mount -o remount,rw /
+    mkdir -p "$2"
+  fi
   if (! is_mounted $2); then
     LOOPDEVICE=
     for LOOP in 0 1 2 3 4 5 6 7; do
@@ -147,7 +150,7 @@ auto_mnt() { auto_mount=true; Toggle auto_mount auto_mount rm touch; }
 enable_disable_mods() { auto_mount=false; Toggle "Module ON/OFF" disable touch rm; }
 
 exxit() {
-	cd $TMPDIR
+	cd $TmpDir
 	umount $MOUNTPATH
 	losetup -d $LOOPDEVICE
 	rmdir $MOUNTPATH
@@ -182,7 +185,7 @@ Opts() {
 
 resize_img() {
 	echo -e "<Resize magisk.img>\n"
-	cd $TMPDIR
+	cd $TmpDir
 	df -h $MOUNTPATH
 	umount $MOUNTPATH
 	losetup -d $LOOPDEVICE
@@ -300,10 +303,13 @@ EOD
 # Environment
 ##########################################################################################
 
-TMPDIR=/dev/tmp
-MOUNTPATH=$TMPDIR/magisk_img
+TmpDir=/dev/mm_tmp
+tmpf=$TmpDir/tmpf
+tmpf2=$TmpDir/tmpf2
+MOUNTPATH=/magisk
 
 mount /data 2>/dev/null
+mount /cache 2>/dev/null
 
 [ -d /data/adb/magisk ] && IMG=/data/adb/magisk.img || IMG=/data/magisk.img
 
@@ -312,17 +318,11 @@ if [ ! -d /data/adb/magisk ] && [ ! -d /data/magisk ]; then
 	exit 1
 fi
 
-#rm -rf $TMPDIR 2>/dev/null
-mkdir -p $MOUNTPATH 2>/dev/null
-
+mkdir -p $TmpDir 2>/dev/null
 mount_image $IMG $MOUNTPATH
-
-tmpf=$TMPDIR/tmpf
-tmpf2=$TMPDIR/tmpf2
 cd $MOUNTPATH
-export PATH="$MOUNTPATH/nano/bin/nano:$PATH"
 
 echo -e "\nMagisk Manager for Recovery Mode (mm)"
-echo "- VR25 @ XDA Developers"
+echo "- VR25 @ xda-developers"
 echo -e "- Powered by Magisk (@topjohnwu)\n"
 Opts

@@ -2,12 +2,12 @@
 ## VR25 @ xda-developers
 
 
-### Description
-- Manage your Magisk image, data, modules & settings in recovery mode -- run "/data/media/mm" on terminal.
-
-
 ### Disclaimer
 - Don't blame me if you end up triggering a nuclear disaster with this module! You do everything at your own risk.
+
+
+### Description
+- Manage your Magisk image, data, modules & settings from recovery mode -- run "/data/media/mm" on terminal.
 
 
 ### Features
@@ -38,6 +38,10 @@
 
 ### Recent Changes
 
+**2018.3.6 (201803060)**
+- Reverted image mount point to /magisk for easier access (mm must be running or closed with CTRL+C)
+- Misc optimizations
+
 **2018.1.31 (201801310)**
 - Ability to change Magisk settings (using vi text editor)
 - Improved compatibility with all major Magisk versions currently in use
@@ -46,7 +50,3 @@
 
 **2017.11.25-1 (201711251)**
 - Fixed "non-existent tmpd" error
-
-**2017.11.25 (201711250)**
-- Top-to-bottom optimizations
-- Users no longer have to reboot recovery after flashing mm -- prior to flashing something else

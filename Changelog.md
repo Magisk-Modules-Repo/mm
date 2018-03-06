@@ -1,3 +1,7 @@
+**2018.3.6 (201803060)**
+- Reverted image mount point to /magisk for easier access (mm must be running or closed with CTRL+C)
+- Misc optimizations
+
 **2018.1.31 (201801310)**
 - Ability to change Magisk settings (using vi text editor)
 - Improved compatibility with all major Magisk versions currently in use
