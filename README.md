@@ -3,7 +3,9 @@
 
 
 ### Disclaimer
-- Don't blame me if you end up triggering a nuclear disaster with this module! You do everything at your own risk.
+- This software is provided as is, in the hope that it will be useful, but without any warranty. Always read the reference prior to installing/updating it. While no cats have been harmed in any way, shape or form, I assume no responsibility under anything that might go wrong due to the use/misuse of it.
+- A copy of the GNU General Public License, version 3 or newer is included with every version. Please, read it prior to using, modifying and/or sharing any part of this work.
+- To avoid fraud, DO NOT mirror any link associated with the project.
 
 
 ### Description
@@ -37,6 +39,10 @@
 
 
 ### Recent Changes
+
+**2018.7.24 (201807240)**
+- Fixed modPath detection issue (Magisk V16.6).
+- Updated documentation
 
 **2018.3.6 (201803060)**
 - Reverted image mount point to /magisk for easier access (mm must be running or closed with CTRL+C)

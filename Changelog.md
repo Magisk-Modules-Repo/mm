@@ -1,3 +1,7 @@
+**2018.7.24 (201807240)**
+- Fixed modPath detection issue (Magisk V16.6).
+- Updated documentation
+
 **2018.3.6 (201803060)**
 - Reverted image mount point to /magisk for easier access (mm must be running or closed with CTRL+C)
 - Misc optimizations
