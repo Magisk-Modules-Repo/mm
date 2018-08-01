@@ -1,18 +1,25 @@
 # Magisk Manager for Recovery Mode
-## VR25 @ xda-developers
+## (c) 2017-2018, VR25 @ xda-developers
+### License: GPL v3+
 
 
-### Disclaimer
-- This software is provided as is, in the hope that it will be useful, but without any warranty. Always read the reference prior to installing/updating it. While no cats have been harmed in any way, shape or form, I assume no responsibility under anything that might go wrong due to the use/misuse of it.
-- A copy of the GNU General Public License, version 3 or newer is included with every version. Please, read it prior to using, modifying and/or sharing any part of this work.
-- To avoid fraud, DO NOT mirror any link associated with the project.
+
+#### DISCLAIMER
+
+- This software is provided as is, in the hope that it will be useful, but without any warranty. Always read the reference prior to installing/updating. While no cats have been harmed, I assume no responsibility under anything that might go wrong due to the use/misuse of it.
+- A copy of the GNU General Public License, version 3 or newer ships with every build. Please, read it prior to using, modifying and/or sharing any part of this work.
+- To prevent fraud, DO NOT mirror any link associated with the project.
 
 
-### Description
+
+#### DESCRIPTION
+
 - Manage your Magisk image, data, modules & settings from recovery mode -- run "/data/media/mm" on terminal.
 
 
-### Features
+
+### FEATURES
+
 - Enable/disable modules
 - Change Magisk settings (using vi text editor)
 - Automatically fix magisk.img (e2fsck -fy)
@@ -23,22 +30,35 @@
 - Uninstall modules
 
 
-### Installation
-- Flash in Magisk Manager app or recovery as a regular Magisk module.
+
+### INSTALATION
+
+- Flash from Magisk Manager or TWRP as a regular Magisk module.
 
 
-### Usage
+
+### USAGE
+
 - First time (right after installing/updating) -- run "mm" (on recovery terminal).
 - Next times (while in recovery) -- no need to re-flash the zip; simply run "/data/media/mm" on terminal.
-- Follow the instructions/wizard; everything is interactive.
+- Follow the instructions/wizard. Everything is interactive.
 
 
-### Online Support
+
+### ONLNE SUPPORT
+
 - [Git Repository](https://github.com/Magisk-Modules-Repo/Magisk-Manager-for-Recovery-Mode)
 - [XDA Thread](https://forum.xda-developers.com/apps/magisk/module-tool-magisk-manager-recovery-mode-t3693165)
 
 
-### Recent Changes
+
+### RECENT CHANGES
+
+**2018.8.1 (201808010)**
+- General optimizations
+- New & simplified installer
+- Striped down (removed unnecessary code & files)
+- Updated documentation
 
 **2018.7.24 (201807240)**
 - Fixed modPath detection issue (Magisk V16.6).
@@ -47,12 +67,3 @@
 **2018.3.6 (201803060)**
 - Reverted image mount point to /magisk for easier access (mm must be running or closed with CTRL+C)
 - Misc optimizations
-
-**2018.1.31 (201801310)**
-- Ability to change Magisk settings (using vi text editor)
-- Improved compatibility with all major Magisk versions currently in use
-- Major optimizations
-- Updated reference
-
-**2017.11.25-1 (201711251)**
-- Fixed "non-existent tmpd" error

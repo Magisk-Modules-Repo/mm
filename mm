@@ -1,13 +1,15 @@
 #!/sbin/sh
-# Magisk Manager for Recovery Mode (mm)
-# VR25 @ xda-developers
+# (c) 2017-2018, VR25 @ xda-developers
+# License: GPL v3+
 
-# Detect whether in boot mode
+
+
+# detect whether in boot mode
 ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true || BOOTMODE=false
 $BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMODE=true
 $BOOTMODE || id | grep -q 'uid=0' || BOOTMODE=true
 
-# Exit script if running in boot mode
+# exit if running in boot mode
 if $BOOTMODE; then
 	echo -e "\nI saw what you did there... :)"
 	echo "- Bad idea!"
@@ -18,9 +20,7 @@ fi
 # Default permissions
 umask 022
 
-##########################################################################################
-# Functions
-##########################################################################################
+
 
 is_mounted() { mountpoint -q "$1"; }
 
@@ -31,43 +31,30 @@ mount_image() {
     mkdir -p "$2"
   fi
   if (! is_mounted $2); then
-    LOOPDEVICE=
+    loopDevice=
     for LOOP in 0 1 2 3 4 5 6 7; do
       if (! is_mounted $2); then
-        LOOPDEVICE=/dev/block/loop$LOOP
-        [ -f "$LOOPDEVICE" ] || mknod $LOOPDEVICE b 7 $LOOP 2>/dev/null
-        losetup $LOOPDEVICE $1
+        loopDevice=/dev/block/loop$LOOP
+        [ -f "$loopDevice" ] || mknod $loopDevice b 7 $LOOP 2>/dev/null
+        losetup $loopDevice $1
         if [ "$?" -eq "0" ]; then
-          mount -t ext4 -o loop $LOOPDEVICE $2
-          is_mounted $2 || /system/bin/toolbox mount -t ext4 -o loop $LOOPDEVICE $2
-          is_mounted $2 || /system/bin/toybox mount -t ext4 -o loop $LOOPDEVICE $2
+          mount -t ext4 -o loop $loopDevice $2
+          is_mounted $2 || /system/bin/toolbox mount -t ext4 -o loop $loopDevice $2
+          is_mounted $2 || /system/bin/toybox mount -t ext4 -o loop $loopDevice $2
         fi
         is_mounted $2 && break
       fi
     done
   fi
-  if ! is_mounted $MOUNTPATH; then
+  if ! is_mounted $mountPath; then
     echo -e "\n(!) $IMG mount failed... abort\n"
     exit 1
   fi
 }
 
-set_perm() {
-  chown $2:$3 "$1" || exit 1
-  chmod $4 "$1" || exit 1
-  [ -z "$5" ] && chcon 'u:object_r:system_file:s0' "$1" || chcon $5 "$1"
-}
 
-set_perm_recursive() {
-  find "$1" -type d 2>/dev/null | while read dir; do
-	set_perm "$dir" $2 $3 $4 $6
-  done
-  find "$1" -type f -o -type l 2>/dev/null | while read file; do
-	set_perm "$file" $2 $3 $5 $6
-  done
-}
 
-Actions() {
+actions() {
 	echo
 	cat <<EOD
 e) Enable/disable modules
@@ -87,19 +74,19 @@ EOD
 exit_or_not() {
 	echo -e "\n(i) Would you like to do anything else? (Y/n)"
 	read Ans
-	echo $Ans | grep -iq n && echo && exxit || Opts
+	echo $Ans | grep -iq n && echo && exxit || opts
 }
 
-mod_ls() { ls -1 $MOUNTPATH | grep -v 'lost+found'; }
+ls_mount_path() { ls -1 $mountPath | grep -v 'lost+found'; }
 
 
-Toggle() {
+toggle() {
 	echo "<Toggle $1>" 
 	: > $tmpf
 	: > $tmpf2
 	Input=0
 	
-	for mod in $(mod_ls); do
+	for mod in $(ls_mount_path); do
 		if $auto_mount; then
 			[ -f "$mod/$2" ] && echo "$mod (ON)" >> $tmpf \
 				|| echo "$mod (OFF)" >> $tmpf
@@ -114,11 +101,11 @@ Toggle() {
 	echo
 	
 	echo "(i) Input a matching WORD/string at once"
-	echo "- Press ENTER when done; CTRL+C to exit"
+	echo "- Press ENTER twice when done; CTRL+C to exit"
 
 	until [ -z "$Input" ]; do
 		read Input
-		if [ "$Input" ]; then
+		if [ -n "$Input" ]; then
 			grep "$Input" $tmpf | grep -q '(ON)' && \
 				echo "$3 $(grep "$Input" $tmpf | grep '(ON)')/$2" >> $tmpf2
 			grep "$Input" $tmpf | grep -q '(OFF)' && \
@@ -145,27 +132,27 @@ Toggle() {
 }
 
 
-auto_mnt() { auto_mount=true; Toggle auto_mount auto_mount rm touch; }
+auto_mnt() { auto_mount=true; toggle auto_mount auto_mount rm touch; }
 
-enable_disable_mods() { auto_mount=false; Toggle "Module ON/OFF" disable touch rm; }
+enable_disable_mods() { auto_mount=false; toggle "Module ON/OFF" disable touch rm; }
 
 exxit() {
-	cd $TmpDir
-	umount $MOUNTPATH
-	losetup -d $LOOPDEVICE
-	rmdir $MOUNTPATH
+	cd $tmpDir
+	umount $mountPath
+	losetup -d $loopDevice
+	rmdir $mountPath
 	[ "$1" != "1" ] && exec echo -e "Goodbye.\n" || exit 1
 }
 
 list_mods() {
 	echo -e "<Installed Modules>\n"
-	mod_ls
+	ls_mount_path
 }
 
 
-Opts() {
+opts() {
 	echo -e "\n(i) Pick an option..."
-	Actions
+	actions
 
 	case "$Input" in
 		e ) enable_disable_mods;;
@@ -176,7 +163,7 @@ Opts() {
 		t ) auto_mnt;;
 		u ) rm_mods;;
 		x ) exxit;;
-		* ) Opts;;
+		* ) opts;;
 	esac
 	
 	exit_or_not
@@ -185,22 +172,17 @@ Opts() {
 
 resize_img() {
 	echo -e "<Resize magisk.img>\n"
-	cd $TmpDir
-	df -h $MOUNTPATH
-	umount $MOUNTPATH
-	losetup -d $LOOPDEVICE
+	cd $tmpDir
+	df -h $mountPath
+	umount $mountPath
+	losetup -d $loopDevice
 	echo -e "\n(i) Input the desired size in MB"
 	echo "- Or nothing to cancel"
-	echo "- Press CTRL+C to exit"
 	read Input
-	if [ -n "$Input" ]; then
-		echo
-		resize2fs $IMG ${Input}M
-	else
-		echo "(i) Operation aborted: null/invalid input"
-	fi
-	mount_image $IMG $MOUNTPATH
-	cd $MOUNTPATH
+	[ -n "$Input" ] && echo -e "\n$(resize2fs $IMG ${Input}M)" \
+    || echo -e "\n(!) Operation aborted: null/invalid input"
+	mount_image $IMG $mountPath
+	cd $mountPath
 }
 
 
@@ -209,15 +191,14 @@ rm_mods() {
 	: > $tmpf2
 	Input=0
 	list_mods
-	echo
-	echo "Input a matching WORD/string at once"
-	echo "- Press ENTER when done; CTRL+C to exit"
+	echo -e "\n(i) Input a matching WORD/string at once"
+	echo "- Press ENTER twice when done, CTRL+C to exit"
 
 	until [ -z "$Input" ]; do
 		read Input
-		[ "$Input" ] && mod_ls | grep "$Input" \
+		[ -n "$Input" ] && ls_mount_path | grep "$Input" \
 			| sed 's/^/rm -rf /' >> $tmpf \
-			&& mod_ls | grep "$Input" >> $tmpf2
+			&& ls_mount_path | grep "$Input" >> $tmpf2
 	done
 
 	if grep -Eq '[0-9]|[a-z]|[A-Z]' $tmpf; then
@@ -225,7 +206,7 @@ rm_mods() {
 		echo "Removed Module(s):"
 		cat $tmpf2
 	else
-		echo "(i) Operation aborted: null/invalid input"
+		echo "(!) Operation aborted: null/invalid input"
 	fi
 }
 
@@ -261,9 +242,9 @@ immortal_m() {
 				echo "(i) Fresh ROM, uh?"
 				echo "-> ln -s /data/media/magisk.img $IMG"
 				ln -s /data/media/magisk.img $IMG \
-				&& echo "- Symlink recreated successfully" \
-				&& echo "- You're all set" \
-				|| echo -e "\n(!) Symlink creation failed"
+          && echo "- Symlink recreated successfully" \
+          && echo "- You're all set" \
+          || echo -e "\n(!) Symlink creation failed"
 			else
 				echo -e "(!) $IMG exists -- symlink cannot be created"
 			fi
@@ -283,15 +264,15 @@ m_settings() {
 
 Some Basic vi Usage
 
-i --> enable typing mode
+i --> enable insertion/typing mode
 
 esc key --> return to comand mode
 ZZ --> save changes & exit
 :q! ENTER --> discard changes & exit
-/STRING --> put cursor on the first character of STRING
+/STRING --> go to STRING
 
 
-Note that I'm no vi expert by any means, but the above should suffice.
+Note that I'm no vi expert by any meAns, but the above should suffice.
 
 Hit ENTER to continue...
 EOD
@@ -299,14 +280,13 @@ EOD
 		vi /data/data/com.topjohnwu.magisk/shared_prefs/com.topjohnwu.magisk_preferences.xml
 	fi
 }
-##########################################################################################
-# Environment
-##########################################################################################
 
-TmpDir=/dev/mm_tmp
-tmpf=$TmpDir/tmpf
-tmpf2=$TmpDir/tmpf2
-MOUNTPATH=/magisk
+
+
+tmpDir=/dev/mm_tmp
+tmpf=$tmpDir/tmpf
+tmpf2=$tmpDir/tmpf2
+mountPath=/magisk
 
 mount /data 2>/dev/null
 mount /cache 2>/dev/null
@@ -318,11 +298,12 @@ if [ ! -d /data/adb/magisk ] && [ ! -d /data/magisk ]; then
 	exit 1
 fi
 
-mkdir -p $TmpDir 2>/dev/null
-mount_image $IMG $MOUNTPATH
-cd $MOUNTPATH
+mkdir -p $tmpDir 2>/dev/null
+mount_image $IMG $mountPath
+cd $mountPath
 
-echo -e "\nMagisk Manager for Recovery Mode (mm)"
-echo "- VR25 @ xda-developers"
-echo -e "- Powered by Magisk (@topjohnwu)\n"
-Opts
+echo -e "\nMagisk Manager for Recovery Mode (mm)
+(c) 2017-2018, VR25 @ xda-developers
+License: GPL v3+"
+
+opts

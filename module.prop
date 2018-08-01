@@ -1,7 +1,7 @@
 id=mm
 name=Magisk Manager for Recovery Mode (mm)
-version=2018.7.24
-versionCode=201807240
+version=2018.8.1
+versionCode=201808010
 author=VR25 @ xda-developers
 description=Manage your Magisk image, data, modules & settings from recovery mode -- run "/data/media/mm" on terminal.
 minMagisk=1500
