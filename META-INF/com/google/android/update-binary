@@ -182,15 +182,17 @@ if [ -f "$IMG" ]; then
   ui_print "- $IMG detected!"
   image_size_check $IMG
   if [ "$reqSizeM" -gt "$curFreeM" ]; then
-	SIZE=$(((reqSizeM + curUsedM) / 32 * 32 + 64))
-	ui_print "- Resizing $IMG to ${SIZE}M..."
-	resize2fs $IMG ${SIZE}M >&2
+    SIZE=$(((reqSizeM + curUsedM) / 32 * 32 + 64))
+    ui_print "- Resizing $IMG to ${SIZE}M..."
+    resize2fs $IMG ${SIZE}M >&2
   fi
 else
   SIZE=$((reqSizeM / 32 * 32 + 64));
   ui_print "- Creating $IMG with size ${SIZE}M"
-  make_ext4fs -l ${SIZE}M $IMG >&2
+  make_ext4fs -l ${SIZE}M $IMG >&2 || { $bootMode && /data/adb/magisk/magisk imgtool create $IMG ${SIZE} >&2 }
 fi
+
+[ -f "$IMG" ] || { echo -e "\n(!) Creat $IMG failed!... abort\n"; exit 1; }
 
 mount_image $IMG $mountPath
 if ! is_mounted $mountPath; then
