@@ -4,4 +4,3 @@ version=2018.8.1
 versionCode=201808010
 author=VR25 @ xda-developers
 description=Manage your Magisk image, data, modules & settings from recovery mode -- run "/data/media/mm" on terminal.
-minMagisk=1500
