@@ -1,7 +1,7 @@
 id=mm
 name=Magisk Manager for Recovery Mode (mm)
-version=2018.8.1
-versionCode=201808010
+version=2019.4.4
+versionCode=201904040
 author=VR25 @ xda-developers
-description=Manage your Magisk image, data, modules & settings from recovery mode -- run "/data/media/mm" on terminal.
-minMagisk=1500
+description=Manage your Magisk v17-19 modules from recovery (e.g., TWRP) -- run " sh /sdcard/mm" on recovery terminal.
+minMagisk=17000
