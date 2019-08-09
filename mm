@@ -7,8 +7,8 @@
 main() {
 
 tmpDir=/dev/_mm
-tmpf=$tmpDir/tmpf
-tmpf2=$tmpDir/tmpf2
+tmpf="$tmpDir/tmpf"
+tmpf2="$tmpDir/tmpf2"
 mountPath=/_magisk
 img=/data/adb/magisk.img
 [ -f $img ] || img=/data/adb/modules
@@ -35,13 +35,13 @@ if [ ! -d /data/adb/magisk ]; then
   exit 1
 fi
 
-mkdir -p $tmpDir
+mkdir -p "$tmpDir"
 mount -o remount,rw /
-mkdir -p $mountPath
+mkdir -p "$mountPath"
 
-[ -f $img ] && e2fsck -fy $img 2>/dev/null 1>&2 || :
-mount -o rw $img $mountPath
-cd $mountPath
+[ -f "$img" ] && e2fsck -fy "$img" 2>/dev/null 1>&2 || :
+mount -o rw "$img" "$mountPath"
+cd "$mountPath"
 options
 }
 
@@ -67,7 +67,7 @@ q) Quit
     read opt
 
     echo
-    case $opt in
+    case "$opt" in
       m) toggle_mnt;;
       d) toggle_disable;;
       l) echo -e "Installed Modules\n"; ls_mods;;
@@ -88,17 +88,17 @@ q) Quit
 
 is_mounted() { grep -q "$1" /proc/mounts; }
 
-ls_mods() { ls -1 $mountPath | grep -v 'lost+found' || echo "<None>"; }
+ls_mods() { ls -1 "$mountPath" | grep -v 'lost+found' || echo "<None>"; }
 
 
 exxit() {
   set +euo pipefail
   cd /
-  umount -f $mountPath
-  rmdir $mountPath
+  umount -f "$mountPath"
+  rmdir "$mountPath"
   mount -o remount,ro /
-  rm -rf $tmpDir
-  [ ${1:-0} -eq 0 ] && { echo -e "\nGoodbye.\n"; exit 0; } || exit $1
+  rm -rf "$tmpDir"
+  [ "${1:-0}" -eq 0 ] && { echo -e "\nGoodbye.\n"; exit 0; } || exit "$1"
 } 2>/dev/null
 
 
@@ -107,7 +107,7 @@ toggle() {
   local file="$1" present="$2" absent="$3"
   for mod in $(ls_mods | grep -v \<None\> || :); do
     echo -n "$mod ["
-    [ -f $mountPath/$mod/$file ] && echo "$present]" || echo "$absent]"
+    [ -f "$mountPath/$mod/$file" ] && echo "$present]" || echo "$absent]"
   done
 
   echo -en "\nInput pattern(s) (e.g., a dot for all, acc, or fbind|xpo|viper): "
@@ -115,9 +115,9 @@ toggle() {
   echo
 
   for mod in $(ls_mods | grep -v \<None\> || :); do
-    if echo $mod | grep -Eq "${input:-_noMatch_}"; then
-      [ -f $mountPath/$mod/$file ] && { rm $mountPath/$mod/$file; echo "$mod [$absent]"; } \
-        || { touch $mountPath/$mod/$file; echo "$mod [$present]"; }
+    if echo "$mod" | grep -Eq "${input:-_noMatch_}"; then
+      [ -f "$mountPath/$mod/$file" ] && { rm "$mountPath/$mod/$file"; echo "$mod [$absent]"; } \
+        || { touch "$mountPath/$mod/$file"; echo "$mod [$present]"; }
     fi
   done
 }
@@ -125,7 +125,7 @@ toggle() {
 
 toggle_mnt() {
   echo -e "Toggle Magic Mount\n"
-  [ -f $img ] && { toggle auto_mount ON OFF || :; } \
+  [ -f "$img" ] && { toggle auto_mount ON OFF || :; } \
     || toggle skip_mount OFF ON
 }
 
