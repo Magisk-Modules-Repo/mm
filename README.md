@@ -66,8 +66,7 @@ Use Magisk Manager app or mm itself (supports `uninstall.sh`, too).
 
 ## USAGE
 
-- First time (right after installing/updating) - run `mm` or `sh /sdcard/mm` on recovery terminal.
-- Next times (while in recovery) - no need to re-flash the zip; simply run `sh /sdcard/mm` on recovery terminal.
+- run `sh /sdcard/mm` on recovery terminal.
 - Follow the instructions/wizard. Everything is interactive.
 - Pro tip: lazy people can try running `*/mm` instead of `sh /sdcard/mm`.
 
