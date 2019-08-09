@@ -54,12 +54,14 @@ Features list
 
 ## SETUP
 
-- Install
-1. Flash live (e.g., from Magisk Manager) or from custom recovery (e.g., TWRP).
+### Install
+Flash live (e.g., from Magisk Manager) or from custom recovery (e.g., TWRP).
 
-- Uninstall
-- Use Magisk Manager app or mm itself (supports `uninstall.sh`, too).
+### Manually Install
+Copy `mm` either from the zip or [github](https://github.com/Magisk-Modules-Repo/mm/raw/master/mm) to `/sdcard` or `/data/media/`.
 
+### Uninstall
+Use Magisk Manager app or mm itself (supports `uninstall.sh`, too).
 
 
 ## USAGE
