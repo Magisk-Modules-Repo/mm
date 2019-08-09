@@ -68,9 +68,7 @@ Use Magisk Manager app or mm itself (supports `uninstall.sh`, too).
 
 - run `sh /sdcard/mm` on recovery terminal.
 - Follow the instructions/wizard. Everything is interactive.
-- Pro tip: lazy people can try running `*/mm` instead of `sh /sdcard/mm`.
-
-
+- Pro tip: lazy people can try running `*/mm` instead of `sh /sdcard/mm` or running `mm` right after installing/updating.
 
 ## LINKS
 
