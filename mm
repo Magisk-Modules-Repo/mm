@@ -3,6 +3,21 @@
 # Copyright (C) 2017-2019, VR25 @ xda-developers
 # License: GPLv3+
 
+echo -n "
+##########################
+0) English
+1) 简体中文
+##########################
+"
+read language_opt
+
+echo
+source 'language/Origin'
+case $language_opt in
+1)
+  source 'language/Chinese'
+  ;;
+esac
 
 main() {
 
@@ -13,14 +28,14 @@ mountPath=/_magisk
 img=/data/adb/magisk.img
 [ -f $img ] || img=/data/adb/modules
 
-echo -e "\nMagisk Manager for Recovery Mode (mm) 2019.4.4
-Copyright (C) 2017-2019, VR25 @ xda-developers
-License: GPLv3+\n"
+echo -e "\n$string_info_mm
+$string_info_copyright
+$string_info_license\n"
 
 trap 'exxit $?' EXIT
 
 if is_mounted /storage/emulated; then
-  echo -e "(!) This is meant to be used in recovery environment only!\n"
+  echo -e "$string_warn $string_used_in_recovery_only\n"
   exit 1
 fi
 
@@ -31,7 +46,7 @@ mount /data 2>/dev/null || :
 mount /cache 2>/dev/null || :
 
 if [ ! -d /data/adb/magisk ]; then
-  echo -e "(!) No Magisk installation found or installed version is not supported.\n"
+  echo -e "$string_warn $string_no_magisk\n"
   exit 1
 fi
 
@@ -52,15 +67,15 @@ options() {
 
   while :; do
     echo -n "##########################
-l) List installed modules
+l) $string_list_installed_modules
 ##########################
-Toggle
-  c) Core only mode
-  m) Magic mount
-  d) Disable
-  r) Remove
+$string_toggle
+  c) $string_core_only_mode
+  m) $string_magic_mount
+  d) $string_disable
+  r) $string_remove
 ##########################
-q) Quit
+q) $string_quit
 ##########################
 
 ?) "
@@ -70,7 +85,7 @@ q) Quit
     case $opt in
       m) toggle_mnt;;
       d) toggle_disable;;
-      l) echo -e "Installed Modules\n"; ls_mods;;
+      l) echo -e "$string_installed_modules\n"; ls_mods;;
       r) toggle_remove;;
       q) exit 0;;
       c) toggle_com;;
@@ -78,7 +93,7 @@ q) Quit
     break
   done
 
-  echo -en "\n(i) Press <enter> to continue or \"q <enter>\" to quit... "
+  echo -en "\n$string_info $string_press_enter"
   read opt
   [ -z "$opt" ] || exit 0
   echo
@@ -98,7 +113,7 @@ exxit() {
   rmdir $mountPath
   mount -o remount,ro /
   rm -rf $tmpDir
-  [ ${1:-0} -eq 0 ] && { echo -e "\nGoodbye.\n"; exit 0; } || exit $1
+  [ ${1:-0} -eq 0 ] && { echo -e "\n$string_goodbye\n"; exit 0; } || exit $1
 } 2>/dev/null
 
 
@@ -110,7 +125,7 @@ toggle() {
     [ -f $mountPath/$mod/$file ] && echo "$present]" || echo "$absent]"
   done
 
-  echo -en "\nInput pattern(s) (e.g., a dot for all, acc, or fbind|xpo|viper): "
+  echo -en "\n$string_input_pattern"
   read input
   echo
 
@@ -124,20 +139,20 @@ toggle() {
 
 
 toggle_mnt() {
-  echo -e "Toggle Magic Mount\n"
+  echo -e "$string_toggle_magic_mount\n"
   [ -f $img ] && { toggle auto_mount ON OFF || :; } \
     || toggle skip_mount OFF ON
 }
 
 
 toggle_disable() {
-  echo -e "Toggle ON/OFF\n"
+  echo -e "$string_toggle_on_off\n"
   toggle disable OFF ON
 }
 
 
 toggle_remove() {
-  echo -e "Mark for Removal ([X])\n"
+  echo -e "$string_mark_for_removal ([X])\n"
   toggle remove X " "
 }
 
@@ -145,10 +160,10 @@ toggle_remove() {
 toggle_com() {
   if [ -f /cache/.disable_magisk ] || [ -f /data/cache/.disable_magisk ]; then
     rm /data/cache/.disable_magisk /cache/.disable_magisk 2>/dev/null || :
-    echo "(i) Core only mode [OFF]"
+    echo "$string_info $string_core_only_mode_off"
   else
     touch /data/cache/.disable_magisk /cache/.disable_magisk 2>/dev/null || :
-    echo "(i) Core only mode [ON]"
+    echo "$string_info $string_core_only_mode_on"
   fi
 }
 
