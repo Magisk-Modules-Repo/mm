@@ -3,6 +3,7 @@
 # Copyright (C) 2017-2019, VR25 @ xda-developers
 # License: GPLv3+
 
+languagePath=/data/adb/modules/mm
 echo -n "
 ##########################
 0) English
@@ -12,10 +13,10 @@ echo -n "
 read language_opt
 
 echo
-source 'language/Origin'
+source "$languagePath/language/Origin"
 case $language_opt in
 1)
-  source 'language/Chinese'
+  source "$languagePath/language/Chinese"
   ;;
 esac
 
